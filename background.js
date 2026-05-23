@@ -47,38 +47,49 @@ chrome.alarms.onAlarm.addListener((alarm) => {
       const tabActivity = res.tabActivity || {};
 
       chrome.tabs.query({}, (tabs) => {
-        tabs.forEach((tab) => {
-          // Guarantee private browsing session isolation
-          if (tab.incognito) return;
+        // Guarantee at least 5 tabs are kept open at all times
+        if (tabs.length <= 5) return;
 
-          // Seed active tab activity if missing
+        // Seed missing tab activity timestamps
+        tabs.forEach((tab) => {
           if (!tabActivity[tab.id]) {
             tabActivity[tab.id] = Date.now();
-            return;
-          }
-
-          if (shouldCloseTab(tab, settings, lockedUrls, tabActivity)) {
-            // Archive closed tab details
-            const tabMeta = {
-              id: Date.now() + Math.random().toString(36).substr(2, 5), // Unique metadata ID
-              url: tab.url,
-              title: tab.title,
-              faviconUrl: tab.favIconUrl || '',
-              closedAt: Date.now()
-            };
-
-            closedTabs.unshift(tabMeta);
-            if (closedTabs.length > 100) {
-              closedTabs.pop(); // Cap size at 100 entries
-            }
-
-            chrome.storage.local.set({ closedTabs }, () => {
-              chrome.tabs.remove(tab.id);
-            });
           }
         });
-        
-        chrome.storage.local.set({ tabActivity });
+
+        // Gather all eligible tabs that exceed the inactive timer
+        const candidateTabs = tabs.filter((tab) => {
+          if (tab.incognito) return false;
+          return shouldCloseTab(tab, settings, lockedUrls, tabActivity);
+        });
+
+        if (candidateTabs.length === 0) return;
+
+        // Sort candidates so the oldest inactive tab is closed first
+        candidateTabs.sort((a, b) => (tabActivity[a.id] || 0) - (tabActivity[b.id] || 0));
+
+        // Max tabs we are allowed to close to keep at least 5 open
+        const maxToClose = tabs.length - 5;
+        const targetsToClose = candidateTabs.slice(0, maxToClose);
+
+        targetsToClose.forEach((tab) => {
+          const tabMeta = {
+            id: Date.now() + Math.random().toString(36).substr(2, 5),
+            url: tab.url,
+            title: tab.title,
+            faviconUrl: tab.favIconUrl || '',
+            closedAt: Date.now()
+          };
+
+          closedTabs.unshift(tabMeta);
+          if (closedTabs.length > 100) {
+            closedTabs.pop();
+          }
+
+          chrome.tabs.remove(tab.id);
+        });
+
+        chrome.storage.local.set({ closedTabs, tabActivity });
       });
     });
   }

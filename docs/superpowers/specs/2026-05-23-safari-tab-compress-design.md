@@ -20,6 +20,7 @@ To ensure maximum performance and absolute stability within Safari's restricted 
 - **Idle Monitor**: Periodically checks all open tabs. Tabs inactive for longer than a user-defined threshold (default: 30 minutes) are automatically closed.
 - **Safari Sleep Mitigation**: Uses `chrome.alarms` scheduled every 1 minute to wake up the background script and process tab cleanups reliably.
 - **Tracking Logic**: Listens to `chrome.tabs.onActivated` and `chrome.tabs.onUpdated` to accurately record absolute timestamps (`lastActiveTime`) for each tab in local storage.
+- **Minimum Keep Tabs**: Always guarantees that at least 5 tabs are kept open across the browser. If the total tab count is 5 or fewer, no tabs will be auto-closed. Older inactive tabs are prioritized and closed first up to this buffer limit.
 
 ### B. Closed Tab Archive (Corral)
 - **Storage**: Automatically stores details of closed tabs: URL, Title, Favicon URL, and Closed Timestamp (`closedAt`).
@@ -107,12 +108,14 @@ The extension stores and coordinates its state using the following namespace str
    - `chrome.tabs.onActivated.addListener`: Update `tabActivity[activeInfo.tabId] = Date.now()`.
    - `chrome.tabs.onRemoved.addListener`: Delete `tabActivity[tabId]`.
 3. **Alarm Trigger**: On alarm fire, fetch settings, whitelists, locks, and tabs.
+   - **5-Tab Buffer Safety Check**: Check if the total open tabs list length is 5 or fewer. If so, immediately skip the closing process to guarantee the user always has at least 5 tabs open.
    - For each tab:
      - **Private Session Check**: Check if the tab is in Private Browsing mode (`tab.incognito === true`). If so, skip it entirely.
      - Check if it is the current active tab in its window (Never auto-close current active tab).
      - Check if URL is in `lockedUrls` or domain is in `whitelist`.
      - Calculate inactive duration: `Date.now() - tabActivity[tabId]`.
-     - If duration > `autoCloseMinutes * 60 * 1000`, save tab metadata to `closedTabs` (prepending to array, keeping max 100 entries), then `chrome.tabs.remove(tabId)`.
+     - If duration > `autoCloseMinutes * 60 * 1000`, mark as candidate tab.
+   - **Age-Based Sequential Closure**: Sort eligible candidate tabs so the oldest inactive tab is closed first. Calculate the maximum number of tabs we are allowed to close (`totalTabs - 5`), slice the candidates up to this limit, write their metadata to `closedTabs` (prepending to array, keeping max 100 entries), and then call `chrome.tabs.remove(tabId)`.
 
 ---
 
