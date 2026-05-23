@@ -73,9 +73,9 @@ Due to Apple's sandbox security policies, Safari extensions on macOS cannot be l
    ```
 
 ### Step 2: Generate macOS Xcode Project using Converter Tool
-Call Apple's built-in `safari-web-extension-converter` to convert this pure Web Extension directory into a macOS Xcode project:
+Call Apple's built-in `safari-web-extension-converter` to convert this pure Web Extension directory into a macOS Xcode project. If executing within the project root directory, use a dot (`.`):
 ```bash
-xcrun safari-web-extension-converter /Users/hunchulchoi/projects/workspace/myside/safari-tab-compress
+xcrun safari-web-extension-converter .
 ```
 - When prompted for configuration choices (e.g., choosing Swift/macOS App configuration), accept the default values.
 - Once finished, the newly generated `.xcodeproj` project will open in Xcode automatically.

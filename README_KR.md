@@ -73,9 +73,9 @@ Apple의 보안 정책상 macOS Safari용 확장 프로그램은 웹 확장 코�
    ```
 
 ### 2단계: Web Extension 변환 도구를 통해 Xcode 프로젝트 빌드
-Apple이 제공하는 내장 변환 도구(`safari-web-extension-converter`)를 사용하여 현재 웹 확장 프로그램 디렉토리를 macOS 네이티브 앱 프로젝트로 감싸줍니다:
+Apple이 제공하는 내장 변환 도구(`safari-web-extension-converter`)를 사용하여 현재 웹 확장 프로그램 디렉토리를 macOS 네이티브 앱 프로젝트로 감싸줍니다. 프로젝트 루트 디렉토리 내부에서 실행하는 경우 아래와 같이 온점(`.`)을 사용합니다:
 ```bash
-xcrun safari-web-extension-converter /Users/hunchulchoi/projects/workspace/myside/safari-tab-compress
+xcrun safari-web-extension-converter .
 ```
 - 실행 중 "출력 언어(Language)로 Swift를 사용할 것인가?" 등의 프롬프트가 나오면 기본값(Swift/macOS)을 선택하고 계속 진행합니다.
 - 변환 및 초기 프로젝트 생성 작업이 완료되면 자동으로 생성된 Xcode 프로젝트(`.xcodeproj`)가 화면에 실행됩니다.
