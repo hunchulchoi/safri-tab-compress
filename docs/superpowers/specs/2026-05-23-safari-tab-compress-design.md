@@ -40,6 +40,11 @@ To ensure maximum performance and absolute stability within Safari's restricted 
 - **Protection**: Any tab belonging to a whitelisted domain is permanently protected from automatic closure.
 - **Management**: Inside the popup's "Settings" tab, users can view, add, and remove domains from the whitelist.
 
+### E. Private Browsing Isolation (Privacy Protection)
+- **Zero Storage & Exclusion**: Tabs opened in Private Browsing (incognito) mode are completely excluded from the auto-close engine.
+- **No Corral Storage**: Under no circumstances will a private tab be recorded or stored in the local archive (Corral) storage.
+- **Popup Isolation**: Private tabs are hidden from the "Lock Tabs" popup tab to avoid leaking private browsing session history.
+
 ---
 
 ## 3. UI/UX Design System
@@ -103,6 +108,7 @@ The extension stores and coordinates its state using the following namespace str
    - `chrome.tabs.onRemoved.addListener`: Delete `tabActivity[tabId]`.
 3. **Alarm Trigger**: On alarm fire, fetch settings, whitelists, locks, and tabs.
    - For each tab:
+     - **Private Session Check**: Check if the tab is in Private Browsing mode (`tab.incognito === true`). If so, skip it entirely.
      - Check if it is the current active tab in its window (Never auto-close current active tab).
      - Check if URL is in `lockedUrls` or domain is in `whitelist`.
      - Calculate inactive duration: `Date.now() - tabActivity[tabId]`.
