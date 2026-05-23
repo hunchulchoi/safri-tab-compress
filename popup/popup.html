@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <span class="logo">⏱️</span>
+      <h1>Safari Tab Compress</h1>
+    </div>
+    <div class="status-indicator">Active</div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" id="tab-corral">Corral</button>
+    <button class="tab-btn" id="tab-lock">Lock Tabs</button>
+    <button class="tab-btn" id="tab-settings">Settings</button>
+  </nav>
+
+  <main class="content">
+    <!-- Corral Tab Panel -->
+    <section class="panel active" id="panel-corral">
+      <div class="toolbar">
+        <input type="text" id="corral-search" class="search-input" placeholder="Search closed tabs...">
+        <button id="corral-clear" class="btn btn-secondary">Clear All</button>
+      </div>
+      <div class="list-container" id="corral-list">
+        <!-- Dynamically generated list -->
+      </div>
+    </section>
+
+    <!-- Lock Tabs Panel -->
+    <section class="panel" id="panel-lock">
+      <p class="panel-desc">Protect active tabs from being automatically closed.</p>
+      <div class="list-container" id="lock-list">
+        <!-- Dynamically generated open tabs list -->
+      </div>
+    </section>
+
+    <!-- Settings Panel -->
+    <section class="panel" id="panel-settings">
+      <div class="setting-group">
+        <label for="close-timer">Auto-Close Delay: <span id="timer-val">30</span> minutes</label>
+        <input type="range" id="close-timer" min="1" max="120" value="30" class="slider">
+      </div>
+      
+      <div class="setting-group">
+        <label>Domain Whitelist</label>
+        <div class="whitelist-input-wrapper">
+          <input type="text" id="whitelist-input" class="text-input" placeholder="e.g. github.com">
+          <button id="whitelist-add" class="btn btn-primary">Add</button>
+        </div>
+        <ul class="whitelist-items" id="whitelist-list">
+          <!-- Whitelist domains -->
+        </ul>
+      </div>
+    </section>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
