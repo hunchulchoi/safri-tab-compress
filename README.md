@@ -61,10 +61,34 @@ All core filtering constraints (Incognito isolation, whitelists, locks, active/p
 
 ---
 
-## 🚀 How to Load in macOS Safari
+## 🚀 macOS Safari Extension Compilation & Build Guide
 
-1. Open **Safari** on macOS.
-2. Go to **Safari** > **Settings** (or **Preferences**) > **Advanced**.
-3. Enable **"Show Develop menu in menu bar"**.
-4. Click **Develop** in the menu bar and check **"Allow Unsigned Extensions"**.
-5. Package/compile the directory using Xcode's Safari Web Extension template and enable the extension in Safari Extensions Preferences.
+Due to Apple's sandbox security policies, Safari extensions on macOS cannot be loaded simply as loose web directories. They must be wrapped into a macOS Xcode Host App. You can easily compile and build the extension in a few steps using built-in terminal tools.
+
+### Step 1: Prepare Xcode Command Line Tools
+1. Ensure **Xcode** (from Mac App Store) is installed on your Mac.
+2. Open terminal and install the Command Line Tools (skip if already installed):
+   ```bash
+   xcode-select --install
+   ```
+
+### Step 2: Generate macOS Xcode Project using Converter Tool
+Call Apple's built-in `safari-web-extension-converter` to convert this pure Web Extension directory into a macOS Xcode project:
+```bash
+xcrun safari-web-extension-converter /Users/hunchulchoi/projects/workspace/myside/safari-tab-compress
+```
+- When prompted for configuration choices (e.g., choosing Swift/macOS App configuration), accept the default values.
+- Once finished, the newly generated `.xcodeproj` project will open in Xcode automatically.
+
+### Step 3: Compile and Build in Xcode
+1. In Xcode, ensure the build target/scheme in the top-left area is configured to **`Safari Tab Compress (macOS)`** or **`macOS App`**.
+2. Press **`Cmd + R`** or click the **Run / Play** icon on the top-left to compile and build the project.
+3. Upon successful compilation, a macOS hosting application window will launch. As long as this host application runs or has been registered, Safari will securely link the extension.
+
+### Step 4: Enable in Safari Browser
+1. Launch **Safari**.
+2. Navigate to **[Safari] -> [Settings / Preferences] -> [Advanced]** tab.
+3. Enable the **"Show Develop menu in menu bar"** option at the bottom.
+4. Click **[Develop]** in the Safari top menu bar and check **"Allow Unsigned Extensions"**.
+   - *Note: This safety switch automatically resets to off when Safari exits. Remember to toggle it back on when initiating new development tests.*
+5. Navigate to **[Safari Settings] -> [Extensions]** tab and check the checkbox next to **`Safari Tab Compress`** to load the popup timer in your toolbar!

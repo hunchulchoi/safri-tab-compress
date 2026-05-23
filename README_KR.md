@@ -61,10 +61,34 @@ safari-tab-compress/
 
 ---
 
-## 🚀 macOS Safari에 확장 프로그램 로드하기
+## 🚀 macOS Safari 확장 프로그램 컴파일 & 빌드 가이드
 
-1. Mac에서 **Safari**를 실행합니다.
-2. 상단 메뉴에서 **[Safari] -> [설정(또는 환경설정)] -> [고급(Advanced)]** 탭으로 이동합니다.
-3. 맨 아래의 **"메뉴 막대에서 개발자용 메뉴 보기(Show Develop menu in menu bar)"**를 체크하여 활성화합니다.
-4. 상단 메뉴 막대에 새로 생긴 **[개발자용(Develop)]** 메뉴를 누르고 **"서명되지 않은 확장 프로그램 허용(Allow Unsigned Extensions)"** 옵션을 체크합니다.
-5. Xcode 등의 변환 도구 또는 Safari Web Extension 프로젝트 양식 폴더를 활용하여 해당 디렉토리를 포함해 컴파일 및 빌드한 후 확장 프로그램 목록에서 활성화하여 사용합니다.
+Apple의 보안 정책상 macOS Safari용 확장 프로그램은 웹 확장 코드 단독 로드가 불가능하며, macOS Xcode 앱 프로젝트로 감싸서(Wrapping) 빌드해야 합니다. 아래 단계에 따라 터미널 명령어 한 줄로 즉시 컴파일하고 빌드할 수 있습니다.
+
+### 1단계: Xcode 및 명령줄 도구 준비
+1. Mac App Store에서 **Xcode**가 설치되어 있는지 확인합니다.
+2. 터미널을 실행한 뒤 Xcode 명령줄 도구를 설치합니다 (이미 설치된 경우 자동으로 넘어갑니다):
+   ```bash
+   xcode-select --install
+   ```
+
+### 2단계: Web Extension 변환 도구를 통해 Xcode 프로젝트 빌드
+Apple이 제공하는 내장 변환 도구(`safari-web-extension-converter`)를 사용하여 현재 웹 확장 프로그램 디렉토리를 macOS 네이티브 앱 프로젝트로 감싸줍니다:
+```bash
+xcrun safari-web-extension-converter /Users/hunchulchoi/projects/workspace/myside/safari-tab-compress
+```
+- 실행 중 "출력 언어(Language)로 Swift를 사용할 것인가?" 등의 프롬프트가 나오면 기본값(Swift/macOS)을 선택하고 계속 진행합니다.
+- 변환 및 초기 프로젝트 생성 작업이 완료되면 자동으로 생성된 Xcode 프로젝트(`.xcodeproj`)가 화면에 실행됩니다.
+
+### 3단계: Xcode에서 컴파일 및 빌드
+1. 열린 Xcode 프로젝트 화면에서 좌측 상단 스키마 설정(Target)이 **`Safari Tab Compress (macOS)`** 또는 **`macOS App`**으로 설정되어 있는지 확인합니다.
+2. 단축키 `Cmd + R`을 누르거나 상단 좌측의 **실행(Run / Play 아이콘)** 버튼을 클릭하여 컴파일 빌드합니다.
+3. 빌드가 완료되면 macOS 호스팅 애플리케이션 창이 화면에 구동됩니다. 이 호스팅 앱이 구동되는 시점에 Safari 확장 프로그램 목록에 플러그인이 자동으로 연동 및 샌드박스 등록됩니다.
+
+### 4단계: Safari 브라우저에서 활성화 및 로드
+1. **Safari** 브라우저를 실행합니다.
+2. 상단 메뉴에서 **[Safari] -> [설정(Settings / 환경설정)] -> [고급(Advanced)]** 탭으로 이동합니다.
+3. 맨 아래에 있는 **"메뉴 막대에서 개발자용 메뉴 보기(Show Develop menu in menu bar)"** 옵션을 체크하여 켭니다.
+4. 새로 활성화된 상단 메뉴바의 **[개발자용(Develop)]** 메뉴를 클릭하고, **"서명되지 않은 확장 프로그램 허용(Allow Unsigned Extensions)"** 옵션을 체크합니다.
+   - *주의: 이 안전 옵션은 Safari가 완전히 꺼지면 보안상 자동으로 비활성화되므로, 개발 모드로 테스트 시 매번 체크를 확인해 주는 것이 좋습니다.*
+5. 다시 **[Safari 설정] -> [확장 프로그램(Extensions)]** 탭으로 이동하여 목록에 추가된 **`Safari Tab Compress`**의 체크박스를 켜주면 Safari 툴바에 ⏱️ 아이콘이 추가됩니다!
