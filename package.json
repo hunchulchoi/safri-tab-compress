@@ -1,0 +1,12 @@
+{
+  "name": "safari-tab-compress",
+  "version": "1.0.0",
+  "description": "Safari Tab Compress Extension",
+  "main": "background.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
